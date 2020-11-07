@@ -44,7 +44,7 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'get',
-            path: 'product',
+            path: 'product/{id}',
           }
         }
       ]

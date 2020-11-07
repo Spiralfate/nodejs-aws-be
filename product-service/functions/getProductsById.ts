@@ -9,7 +9,7 @@ const fetchProductById = async (id) => {
 }
 
 const getProductById: APIGatewayProxyHandler = async event => {
-    const product = await fetchProductById(event.queryStringParameters.id);
+    const product = await fetchProductById(event.pathParameters.id);
   
     return {
       statusCode: 200,
