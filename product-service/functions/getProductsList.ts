@@ -1,8 +1,46 @@
 import { APIGatewayProxyHandler } from 'aws-lambda';
-import productsList from '../mocks/productList';
+import { Client } from 'pg';
 
-const fetchProductList = () => {
-  return Promise.resolve(productsList);
+import * as config from '../serverless';
+
+const getDbOptions = () => {
+  const {
+    PG_HOST: host,
+    PG_PORT: port,
+    PG_DATABASE: database,
+    PG_USERNAME: user,
+    PG_PASSWORD: password,
+  } = (config as any).provider.environment;
+
+  return {
+    host,
+    port,
+    database,
+    user,
+    password,
+  };
+}
+
+const fetchProductList = async () => {
+  const client = new Client(getDbOptions());
+  await client.connect();
+
+  let products;
+
+  try {
+    const query = {
+      text: 'select * from products join stocks on products.id = stocks.product_id',
+    }    
+    const { rows } = await client.query(query);
+
+    products = rows;
+  } catch(e) {
+
+  } finally {
+    client.end();
+  }
+
+  return Promise.resolve(products);
 }
 
 const getProductsList: APIGatewayProxyHandler = async event => {

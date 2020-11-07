@@ -1,4 +1,5 @@
 import type { Serverless } from 'serverless/aws';
+const dbOptions = require('./sql/config.js');
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -24,6 +25,11 @@ const serverlessConfiguration: Serverless = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST: dbOptions.host,
+      PG_PORT: dbOptions.port,
+      PG_DATABASE: dbOptions.database,
+      PG_USERNAME: dbOptions.user,
+      PG_PASSWORD: dbOptions.password,
     },
   },
   functions: {
@@ -49,6 +55,17 @@ const serverlessConfiguration: Serverless = {
         }
       ]
     },
+    add: {
+      handler: 'handler.addProduct',
+      events: [
+        {
+          http: {
+            method: 'post',
+            path: 'product',
+          }
+        }
+      ]
+    }
   }
 }
 
