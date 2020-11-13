@@ -50,7 +50,7 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'get',
-            path: 'product/{id}',
+            path: 'products/{id}',
           }
         }
       ]
@@ -61,7 +61,7 @@ const serverlessConfiguration: Serverless = {
         {
           http: {
             method: 'post',
-            path: 'product',
+            path: 'products',
           }
         }
       ]
