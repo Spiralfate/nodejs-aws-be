@@ -60,8 +60,8 @@ const serverlessConfiguration: Serverless = {
       events: [
         {
           http: {
-            method: 'post',
-            path: 'products',
+            method: 'put',
+            path: 'product',
           }
         }
       ]
