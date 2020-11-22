@@ -1,0 +1,36 @@
+service: import-service
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  environment:
+    bucketName: "arn:aws:s3:::my-2nd-app-er-files"
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action: "s3:ListBucket"
+      Resource:
+        - "arn:aws:s3:::my-2nd-app-er-files"
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+      Resource:
+        - "arn:aws:s3:::my-2nd-app-er-files/*"
+
+functions:
+  import:
+    handler: handler.importProductsFile
+    events:
+      - http:
+          path: product/import
+          method: get
+  parse:
+    handler: handler.parseProductsFile
+    events:
+      - s3:
+          bucket: "my-2nd-app-er-files"
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploaded/
+          existing: true
