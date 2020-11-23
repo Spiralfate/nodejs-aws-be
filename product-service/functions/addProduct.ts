@@ -21,22 +21,28 @@ const getDbOptions = () => {
   };
 }
 
-const addProductToDb = async ({ title, description, price }) => {
+const createQueryToAddProduct = async ({ title, description, price }) => {
+  if (!title || !description || !price) {
+      throw new Error('Insufficient fields');
+  }
+
+  const preparedProduct = `('${title}', '${description}', ${price})`;
+
+  const query = {
+      text: `insert into products(title, description, price) values ${preparedProduct}`,
+  }
+
+  return query;
+}
+
+const addProductToDb = async (productData) => {
   const client = new Client(getDbOptions());
   await client.connect();
-  
+
   let product;
 
   try {
-
-    if (!title || !description || !price) {
-        throw new Error('Insufficient fields');
-    }
-
-    const preparedProduct = `('${title}', '${description}', ${price})`;
-    const query = {
-        text: `insert into products(title, description, price) values ${preparedProduct}`,
-    }    
+    const query = createQueryToAddProduct(productData);
     const { rows } = await client.query(query);
 
     product = rows;
@@ -48,6 +54,8 @@ const addProductToDb = async ({ title, description, price }) => {
 
   return Promise.resolve(product);
 }
+
+
 
 const addProduct: APIGatewayProxyHandler = async event => {
     const product = await addProductToDb(event as any);
@@ -68,4 +76,5 @@ const addProduct: APIGatewayProxyHandler = async event => {
 
 }
 
+export { createQueryToAddProduct, getDbOptions };
 export default addProduct;

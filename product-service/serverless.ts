@@ -31,6 +31,13 @@ const serverlessConfiguration: Serverless = {
       PG_USERNAME: dbOptions.user,
       PG_PASSWORD: dbOptions.password,
     },
+    iamRoleStatements: [
+      {
+        Effect: "Allow",
+        Action: ["sqs:*"],
+        Resource: ["arn:aws:sqs:us-east-1:602015266074:catalogItemsQueue"],
+      },
+    ],
   },
   functions: {
     products: {
@@ -65,7 +72,18 @@ const serverlessConfiguration: Serverless = {
           }
         }
       ]
-    }
+    },
+    catalogBatchProcess: {
+      handler: 'handler.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn: "arn:aws:sqs:us-east-1:602015266074:catalogItemsQueue"
+          }
+        }
+      ]
+    },
   }
 }
 
