@@ -24,6 +24,13 @@ provider:
       Resource:
         - Fn::GetAtt: [ SQSQueue, Arn ]
 
+resources:
+  Resources:
+    SQSQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+
 functions:
   import:
     handler: handler.importProductsFile

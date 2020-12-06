@@ -7,6 +7,7 @@ const BUCKET_PREFIX_TARGET = 'parsed';
 
 const parseProductsFile = event => {
     const s3 = new AWS.S3({ region: 'us-east-1' });
+    const sqs = new AWS.SQS();
     const getObjectOptions = record => ({ Bucket: BUCKET_NAME, Key: record.s3.object.key });
 
     event.Records.forEach(record => {
@@ -19,7 +20,17 @@ const parseProductsFile = event => {
 
         s3Stream.pipe(csv())
             .on('data', data => {
-                console.log(`Stream data: ${data}`);
+                const dataString = JSON.stringify(data);
+                console.log(`Stream data: ${dataString}`);
+
+                console.log(`Sending message to sqs with url ${process.env.SQS_URL}`)
+
+                sqs.sendMessage({
+                    QueueUrl: process.env.SQS_URL,
+                    MessageBody: dataString,
+                }, () => {
+                    console.log(`Message sent for: ${dataString}`);
+                })
             })
             .on('end', async () => {
                 const key = record.s3.object.key;
