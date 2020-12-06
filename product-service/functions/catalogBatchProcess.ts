@@ -5,14 +5,13 @@ import { createQueryToAddProduct, getDbOptions } from './addProduct';
 
 const catalogBatchProcess = async event => {
     const products = event.Records.map(({ body }) => body);
+
     const client = new Client(getDbOptions());
     await client.connect();
   
-    let product;
-  
     try {    
         products.forEach(async productData => {
-            console.log(`Product from queue: ${JSON.stringify(product)}`);
+            console.log(`Product from queue: ${JSON.stringify(productData)}`);
 
             const query = createQueryToAddProduct(productData);
 

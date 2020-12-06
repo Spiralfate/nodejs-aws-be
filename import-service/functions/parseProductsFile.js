@@ -23,9 +23,11 @@ const parseProductsFile = event => {
                 const dataString = JSON.stringify(data);
                 console.log(`Stream data: ${dataString}`);
 
+                console.log(`Sending message to sqs with url ${process.env.SQS_URL}`)
+
                 sqs.sendMessage({
                     QueueUrl: process.env.SQS_URL,
-                    MessageBody: data,
+                    MessageBody: dataString,
                 }, () => {
                     console.log(`Message sent for: ${dataString}`);
                 })
