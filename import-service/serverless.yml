@@ -24,13 +24,6 @@ provider:
       Resource:
         - Fn::GetAtt: [ SQSQueue, Arn ]
 
-resources:
-  Resources:
-    SQSQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: catalogItemsQueue
-
 functions:
   import:
     handler: handler.importProductsFile
@@ -38,6 +31,12 @@ functions:
       - http:
           path: product/import
           method: get
+          authorizer:
+            name: hznh2o
+            arn: "arn:aws:lambda:us-east-1:602015266074:function:authorization-service-dev-authorizer"
+            resultTtlInSeconds: 0
+            identifySource: method.requset.header.Authorization
+            type: token
   parse:
     handler: handler.parseProductsFile
     events:
@@ -58,14 +57,14 @@ resources:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: catalogItemsQueue
-    SNSTopic:
-      Type: AWS::SNS::TOPIC
-      Properties:
-        TopicName: createProductTopic
-    SNSSubscription:
-      Type: AWS::SNS::Subscription
-      Properties:
-        Endpoint: sortayne@gmail.com
-        Protocol: email
-        TopicArn:
-          Ref: SNSTopic
+    # SNSTopic:
+    #   Type: AWS::SNS::TOPIC
+    #   Properties:
+    #     TopicName: createProductTopic
+    # SNSSubscription:
+    #   Type: AWS::SNS::Subscription
+    #   Properties:
+    #     Endpoint: sortayne@gmail.com
+    #     Protocol: email
+    #     TopicArn:
+    #       Ref: SNSTopic
